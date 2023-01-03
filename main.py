@@ -25,26 +25,9 @@ def generate_review_questions(prompt, model, temperature, num_questions, per_pag
         pages = prompt.split("\n\n")
         for page in pages:
             # Generate the specified number of review questions for each page
-            page_questions = []
-            for i in range(num_questions):
-                completions = openai.Completion.create(
-                    engine=model,
-                    prompt=f"Review questions for the following text:\n{page}\n\n",
-                    max_tokens=1024,
-                    n=1,
-                    temperature=temperature,
-                    top_p=1,
-                    frequency_penalty=0,
-                    presence_penalty=0
-                )
-                page_questions.append(completions.choices[0].text)
-            review_questions.extend(page_questions)
-    else:
-        # Generate the specified number of review questions for the entire document
-        for i in range(num_questions):
             completions = openai.Completion.create(
                 engine=model,
-                prompt=f"Review questions for the following text:\n{prompt}\n\n",
+                prompt=f"Please give me {num_questions} review questions for the following text:\n{page}\n\n",
                 max_tokens=1024,
                 n=1,
                 temperature=temperature,
@@ -53,6 +36,19 @@ def generate_review_questions(prompt, model, temperature, num_questions, per_pag
                 presence_penalty=0
             )
             review_questions.append(completions.choices[0].text)
+    else:
+        # Generate the specified number of review questions for the entire document
+        completions = openai.Completion.create(
+            engine=model,
+            prompt=f"Please give me {num_questions} review questions for the following text:\n{prompt}\n\n",
+            max_tokens=1024,
+            n=1,
+            temperature=temperature,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        review_questions.append(completions.choices[0].text)
     return review_questions
 
 # Get the file path from the first argument
